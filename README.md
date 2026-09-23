@@ -1,3 +1,7 @@
+## Android 앱 검증 경로
+
+현재 직접 GS25 upstream은 HTTP 403, 공개 relay는 GS25_API_KEY 부재로 503을 반환합니다. 공식 우리동네GS Android 앱(com.gsr.gs25)을 ADB로 자동 조작하는 검증 경로를 추가했습니다. 자세한 내용은 docs/android-test.md를 참고하세요.
+
 # GS25 Stock Alert Bot
 
 GS25 상품 재고를 조회하고 재입고(0 → 1 이상) 이벤트를 감지하기 위한 Python MVP입니다.
