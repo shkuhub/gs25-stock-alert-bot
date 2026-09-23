@@ -20,12 +20,16 @@ from app.state import (
 )
 
 
-def resolve_product_codes() -> None:
+def resolve_product_codes_once() -> None:
     for product in PRODUCTS:
         if product["item_code"]:
             continue
 
-        result = find_exact_product(product["name"])
+        try:
+            result = find_exact_product(product["name"])
+        except Exception as exc:
+            print(f"[PRODUCT ERROR] {product['name']}: {exc}")
+            continue
 
         if result:
             product["item_code"] = result["item_code"]
@@ -38,12 +42,11 @@ def resolve_product_codes() -> None:
 
 
 def run_once() -> None:
-    resolve_product_codes()
-
     for product in PRODUCTS:
         item_code = product["item_code"]
 
         if not item_code:
+            print(f"[SKIP] itemCode missing: {product['name']}")
             continue
 
         try:
@@ -68,7 +71,7 @@ def run_once() -> None:
             current = stock["quantity"]
             previous = get_previous_quantity(item_code, store_code)
 
-            # First observation only seeds state; it does not notify.
+            # First observation seeds state without notifying.
             if previous == 0 and current > 0:
                 notify_restock(stock)
 
@@ -81,6 +84,7 @@ def run_once() -> None:
 
 def main() -> None:
     init_db()
+    resolve_product_codes_once()
 
     print(
         f"[START] polling every {POLL_SECONDS}s | "
