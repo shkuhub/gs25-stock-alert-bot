@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 
-from app.config import GS25_LAT, GS25_LON, GS25_RADIUS
+from app.config import GS25_LAT, GS25_LON, GS25_RADIUS, GS25_SOURCE
 from app.gs25_client import get_stock
 from app.inventory import normalize_stocks
 from app.product_discovery import find_exact_product
@@ -23,6 +23,7 @@ def main() -> None:
 
     print(f"[FOUND] itemCode={product['item_code']}")
     print(f"[FOUND] itemName={product['item_name']}")
+    print(f"[SOURCE] {GS25_SOURCE}")
 
     product["name"] = product["item_name"]
 
@@ -36,6 +37,7 @@ def main() -> None:
         latitude=GS25_LAT,
         longitude=GS25_LON,
         radius=GS25_RADIUS,
+        source=GS25_SOURCE,
     )
 
     stocks = normalize_stocks(product, stores)
