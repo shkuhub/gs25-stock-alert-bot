@@ -10,8 +10,15 @@ STOCK_URL = "https://b2c-bff.woodongs.com/api/bff/v2/store/stock"
 SESSION = requests.Session()
 SESSION.headers.update(
     {
-        "User-Agent": "gs25-stock-alert-bot/0.1",
-        "Accept": "application/json",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+        "User-Agent": (
+            "Mozilla/5.0 (Linux; Android 15; SM-S928N) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Version/4.0 Chrome/124.0 Mobile Safari/537.36"
+        ),
+        "Origin": "https://woodongs.com",
+        "Referer": "https://woodongs.com/",
     }
 )
 
@@ -32,6 +39,8 @@ def get_stock(
         "radiusCondition": radius,
         "pickupStoreYn": "N",
         "realTimeStockYn": "Y",
+        "isSuperDlvyStoreSelected": "N",
+        "isGs25DlvyStoreSelected": "N",
         "pageNumber": 0,
         "pageCount": 100,
     }
@@ -42,7 +51,6 @@ def get_stock(
         timeout=10,
     )
 
-    # Never hammer the endpoint after an explicit rate-limit response.
     if response.status_code == 429:
         retry_after = response.headers.get("Retry-After")
         try:
@@ -58,8 +66,14 @@ def get_stock(
         )
 
     if response.status_code == 403:
+        body = response.text.strip().replace("\n", " ")
+        if len(body) > 500:
+            body = body[:500] + "..."
+
         raise RuntimeError(
-            "GS25 API returned HTTP 403. Stop polling and review access/rate-limit behavior."
+            "GS25 API returned HTTP 403. "
+            "The request is being denied before normal inventory response. "
+            f"Response body: {body or '<empty>'}"
         )
 
     response.raise_for_status()
