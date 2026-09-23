@@ -6,7 +6,7 @@ from app.config import (
     GS25_LAT,
     GS25_LON,
     GS25_RADIUS,
-    POLL_SECONDS,
+    POLL_SECONDS,\n    GS25_SOURCE,
 )
 from app.gs25_client import get_stock
 from app.inventory import normalize_stocks
@@ -54,7 +54,7 @@ def run_once() -> None:
                 item_code=item_code,
                 latitude=GS25_LAT,
                 longitude=GS25_LON,
-                radius=GS25_RADIUS,
+                radius=GS25_RADIUS,\n                source=GS25_SOURCE,
             )
         except Exception as exc:
             print(f"[STOCK ERROR] {product['name']}: {exc}")
